@@ -110,17 +110,17 @@
     </nav>
     <main>
         <section id="duda" class="calendar-section">
-            <h1>Duda <img src="https://www.gsuplementos.com.br/img/products/creatina-250g-creapure-growth-supplements-p985824-1555012979375_g.jpg" alt="Creatina"></h1>
+            <h1>Duda <img src="https://via.placeholder.com/50" alt="Creatina"></h1>
             <h2>Calendário da Creatina</h2>
             <ul class="calendar" id="duda-calendar"></ul>
         </section>
         <section id="rafa" class="calendar-section">
-            <h1>Rafa <img src="https://www.gsuplementos.com.br/img/products/creatina-250g-creapure-growth-supplements-p985824-1555012979375_g.jpg" alt="Creatina"></h1>
+            <h1>Rafa <img src="https://via.placeholder.com/50" alt="Creatina"></h1>
             <h2>Calendário da Creatina</h2>
             <ul class="calendar" id="rafa-calendar"></ul>
         </section>
         <section id="ale" class="calendar-section">
-            <h1>Alê <img src="https://www.gsuplementos.com.br/img/products/creatina-250g-creapure-growth-supplements-p985824-1555012979375_g.jpg" alt="Creatina"></h1>
+            <h1>Alê <img src="https://via.placeholder.com/50" alt="Creatina"></h1>
             <h2>Calendário da Creatina</h2>
             <ul class="calendar" id="ale-calendar"></ul>
         </section>
@@ -134,7 +134,7 @@
             };
 
             const months = ["Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-            const daysInMonth = [24, 31, 30, 31, 30, 31]; // Starting from 8th of July
+            const daysInMonth = [31, 31, 30, 31, 30, 31]; // Correcting the number of days in each month
 
             Object.keys(calendars).forEach(person => {
                 let calendar = calendars[person];
@@ -170,7 +170,8 @@
                     let data = JSON.parse(localStorage.getItem(person) || '{}');
                     Object.keys(data).forEach(date => {
                         let [day, month] = date.split('-');
-                        let button = calendars[person].children[day - 1 + month * daysInMonth[month]].querySelector('button');
+                        let index = parseInt(day) - (month === '0' ? 8 : 1) + (month === '0' ? 0 : 31 - 8 + 1);
+                        let button = calendars[person].children[index].querySelector('button');
                         if (data[date]) {
                             button.classList.add('completed');
                             button.textContent = "Desmarcar";
