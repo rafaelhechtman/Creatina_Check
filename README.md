@@ -28,7 +28,7 @@
 
         main {
             padding: 1em;
-            max-width: 1000px;
+            max-width: 800px;
             margin: auto;
         }
 
@@ -44,9 +44,6 @@
         }
 
         .calendar-container {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
             margin-top: 1em;
         }
 
@@ -60,11 +57,25 @@
             width: 100%;
         }
 
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1em;
+        }
+
+        .calendar-nav button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            cursor: pointer;
+        }
+
         .calendar {
             display: table;
             border-collapse: collapse;
             width: 100%;
-            margin-top: 1em;
         }
 
         .calendar th, .calendar td {
@@ -86,14 +97,14 @@
 
         .calendar button {
             background-color: #28a745;
-            color: white;
             border: none;
-            padding: 0.3em 0.5em;
+            width: 1em;
+            height: 1em;
             cursor: pointer;
-            font-size: 0.7em;
             position: absolute;
             bottom: 0.5em;
             right: 0.5em;
+            border-radius: 50%;
         }
 
         .calendar button.completed {
@@ -117,15 +128,21 @@
             <h1>Minha rotina</h1>
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
-                <div class="calendar-wrapper">
-                    <table class="calendar" id="creatina-calendar"></table>
+                <div class="calendar-nav">
+                    <button onclick="prevMonth('creatina')">&lt; Mês Anterior</button>
+                    <span id="creatina-month-year"></span>
+                    <button onclick="nextMonth('creatina')">Próximo Mês &gt;</button>
                 </div>
+                <table class="calendar" id="creatina-calendar"></table>
             </div>
             <div class="calendar-container">
                 <h2>Calendário de Exercícios</h2>
-                <div class="calendar-wrapper">
-                    <table class="calendar" id="exercicio-calendar"></table>
+                <div class="calendar-nav">
+                    <button onclick="prevMonth('exercicio')">&lt; Mês Anterior</button>
+                    <span id="exercicio-month-year"></span>
+                    <button onclick="nextMonth('exercicio')">Próximo Mês &gt;</button>
                 </div>
+                <table class="calendar" id="exercicio-calendar"></table>
             </div>
         </section>
     </main>
@@ -134,24 +151,44 @@
     </footer>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+
             const calendars = {
-                creatina: document.getElementById('creatina-calendar'),
-                exercicio: document.getElementById('exercicio-calendar')
+                creatina: {
+                    element: document.getElementById('creatina-calendar'),
+                    monthYear: document.getElementById('creatina-month-year'),
+                    currentMonth: currentMonth,
+                    currentYear: currentYear,
+                    key: 'creatina'
+                },
+                exercicio: {
+                    element: document.getElementById('exercicio-calendar'),
+                    monthYear: document.getElementById('exercicio-month-year'),
+                    currentMonth: currentMonth,
+                    currentYear: currentYear,
+                    key: 'exercicio'
+                }
             };
 
-            const months = ["Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-            const daysInMonth = [31, 31, 30, 31, 30, 31];
-            const startDay = [8, 1, 1, 1, 1, 1];
+            const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
-            function createCalendar(calendar, month, days, startDay) {
+            function renderCalendar(calendar) {
+                const {element, monthYear, currentMonth, currentYear, key} = calendar;
+                element.innerHTML = '';
+                monthYear.textContent = `${getMonthName(currentMonth)} ${currentYear}`;
+
+                const firstDay = new Date(currentYear, currentMonth).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
                 const headerRow = document.createElement('tr');
-                const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
                 daysOfWeek.forEach(day => {
                     const th = document.createElement('th');
                     th.textContent = day;
                     headerRow.appendChild(th);
                 });
-                calendar.appendChild(headerRow);
+                element.appendChild(headerRow);
 
                 let date = 1;
                 for (let i = 0; i < 6; i++) {
@@ -159,35 +196,54 @@
 
                     for (let j = 0; j < 7; j++) {
                         const cell = document.createElement('td');
-                        if (i === 0 && j < startDay[month]) {
+                        if (i === 0 && j < firstDay) {
                             cell.textContent = "";
-                        } else if (date > days[month]) {
+                        } else if (date > daysInMonth) {
                             break;
                         } else {
                             cell.textContent = date;
                             const button = document.createElement('button');
-                            button.textContent = "Marcar";
                             button.addEventListener('click', () => {
-                                toggleCompletion(button, calendar.id, `${date}-${month}`);
+                                toggleCompletion(button, key, `${date}-${currentMonth}-${currentYear}`);
                             });
                             cell.appendChild(button);
                             date++;
                         }
                         row.appendChild(cell);
                     }
-                    calendar.appendChild(row);
+                    element.appendChild(row);
                 }
+
+                loadCompletion(calendar);
             }
 
-            Object.keys(calendars).forEach(type => {
-                for (let month = 0; month < months.length; month++) {
-                    createCalendar(calendars[type], month, daysInMonth, startDay);
+            function getMonthName(monthIndex) {
+                const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                return months[monthIndex];
+            }
+
+            function prevMonth(calendarKey) {
+                const calendar = calendars[calendarKey];
+                calendar.currentMonth--;
+                if (calendar.currentMonth < 0) {
+                    calendar.currentMonth = 11;
+                    calendar.currentYear--;
                 }
-            });
+                renderCalendar(calendar);
+            }
+
+            function nextMonth(calendarKey) {
+                const calendar = calendars[calendarKey];
+                calendar.currentMonth++;
+                if (calendar.currentMonth > 11) {
+                    calendar.currentMonth = 0;
+                    calendar.currentYear++;
+                }
+                renderCalendar(calendar);
+            }
 
             function toggleCompletion(button, key, date) {
                 let completed = button.classList.toggle('completed');
-                button.textContent = completed ? "Desmarcar" : "Marcar";
                 saveCompletion(key, date, completed);
             }
 
@@ -197,22 +253,23 @@
                 localStorage.setItem(key, JSON.stringify(data));
             }
 
-            function loadCompletion() {
-                Object.keys(calendars).forEach(type => {
-                    let key = type;
-                    let data = JSON.parse(localStorage.getItem(key) || '{}');
-                    Object.keys(data).forEach(date => {
-                        let [day, month] = date.split('-');
-                        let button = calendars[type].querySelector(`td:contains('${day}') button`);
+            function loadCompletion(calendar) {
+                const {element, key, currentMonth, currentYear} = calendar;
+                let data = JSON.parse(localStorage.getItem(key) || '{}');
+                Object.keys(data).forEach(date => {
+                    const [day, month, year] = date.split('-');
+                    if (parseInt(month) === currentMonth && parseInt(year) === currentYear) {
+                        const button = element.querySelector(`td:nth-child(${parseInt(day) + (new Date(currentYear, currentMonth).getDay()) % 7}) button`);
                         if (data[date]) {
                             button.classList.add('completed');
-                            button.textContent = "Desmarcar";
                         }
-                    });
+                    }
                 });
             }
 
-            loadCompletion();
+            Object.keys(calendars).forEach(key => {
+                renderCalendar(calendars[key]);
+            });
         });
     </script>
 </body>
