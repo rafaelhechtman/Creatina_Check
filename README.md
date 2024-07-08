@@ -49,6 +49,18 @@
             display: block;
         }
 
+        .calendar-section h1 {
+            display: flex;
+            align-items: center;
+        }
+
+        .calendar-section h1 img {
+            margin-left: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
         h1 {
             color: #007bff;
         }
@@ -58,16 +70,21 @@
         }
 
         .calendar {
+            display: flex;
+            flex-wrap: wrap;
             list-style-type: none;
             padding: 0;
         }
 
         .calendar li {
             padding: 0.5em;
-            border-bottom: 1px solid #ccc;
+            border: 1px solid #ccc;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: calc(33.333% - 10px);
+            box-sizing: border-box;
+            margin: 5px;
         }
 
         button {
@@ -93,17 +110,17 @@
     </nav>
     <main>
         <section id="duda" class="calendar-section">
-            <h1>Duda</h1>
+            <h1>Duda <img src="https://www.gsuplementos.com.br/img/products/creatina-250g-creapure-growth-supplements-p985824-1555012979375_g.jpg" alt="Creatina"></h1>
             <h2>Calendário da Creatina</h2>
             <ul class="calendar" id="duda-calendar"></ul>
         </section>
         <section id="rafa" class="calendar-section">
-            <h1>Rafa</h1>
+            <h1>Rafa <img src="https://www.gsuplementos.com.br/img/products/creatina-250g-creapure-growth-supplements-p985824-1555012979375_g.jpg" alt="Creatina"></h1>
             <h2>Calendário da Creatina</h2>
             <ul class="calendar" id="rafa-calendar"></ul>
         </section>
         <section id="ale" class="calendar-section">
-            <h1>Alê</h1>
+            <h1>Alê <img src="https://www.gsuplementos.com.br/img/products/creatina-250g-creapure-growth-supplements-p985824-1555012979375_g.jpg" alt="Creatina"></h1>
             <h2>Calendário da Creatina</h2>
             <ul class="calendar" id="ale-calendar"></ul>
         </section>
@@ -116,13 +133,13 @@
                 'ale': document.getElementById('ale-calendar')
             };
 
-            const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-            const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            const months = ["Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            const daysInMonth = [24, 31, 30, 31, 30, 31]; // Starting from 8th of July
 
             Object.keys(calendars).forEach(person => {
                 let calendar = calendars[person];
                 for (let month = 0; month < months.length; month++) {
-                    for (let day = 1; day <= daysInMonth[month]; day++) {
+                    for (let day = (month === 0 ? 8 : 1); day <= daysInMonth[month]; day++) {
                         let listItem = document.createElement('li');
                         listItem.textContent = `${day} de ${months[month]}`;
                         let button = document.createElement('button');
