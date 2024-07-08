@@ -20,12 +20,6 @@
             text-align: center;
         }
 
-        header h1 {
-            font-size: 2em;
-            font-family: 'Verdana', sans-serif;
-            margin: 0;
-        }
-
         main {
             padding: 1em;
             max-width: 800px;
@@ -34,17 +28,6 @@
 
         .calendar-section {
             margin-bottom: 2em;
-        }
-
-        .calendar-section h1 {
-            text-align: center;
-            font-size: 1.5em;
-            font-family: 'Verdana', sans-serif;
-            margin: 0;
-        }
-
-        .calendar-container {
-            margin-top: 1em;
         }
 
         .calendar-container h2 {
@@ -117,15 +100,25 @@
             font-size: 0.7em;
             color: #aaa;
         }
+
+        .name-input {
+            display: block;
+            margin: 0 auto 1em;
+            padding: 0.5em;
+            font-size: 1em;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            font-family: 'Verdana', sans-serif;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Minhas Tarefas</h1>
+        <input type="text" class="name-input" id="username" placeholder="Digite seu nome">
     </header>
     <main>
         <section class="calendar-section">
-            <h1>Minha rotina</h1>
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
                 <div class="calendar-nav">
@@ -204,7 +197,7 @@
                             cell.textContent = date;
                             const button = document.createElement('button');
                             button.addEventListener('click', () => {
-                                toggleCompletion(button, key, `${date}-${currentMonth}-${currentYear}`);
+                                toggleCompletion(button, key, `${date}-${currentMonth + 1}-${currentYear}`);
                             });
                             cell.appendChild(button);
                             date++;
@@ -258,18 +251,36 @@
                 let data = JSON.parse(localStorage.getItem(key) || '{}');
                 Object.keys(data).forEach(date => {
                     const [day, month, year] = date.split('-');
-                    if (parseInt(month) === currentMonth && parseInt(year) === currentYear) {
-                        const button = element.querySelector(`td:nth-child(${parseInt(day) + (new Date(currentYear, currentMonth).getDay()) % 7}) button`);
-                        if (data[date]) {
-                            button.classList.add('completed');
-                        }
+                    if (parseInt(month) === currentMonth + 1 && parseInt(year) === currentYear) {
+                        const buttons = element.querySelectorAll('button');
+                        buttons.forEach(button => {
+                            if (button.parentElement.textContent.trim() === day) {
+                                if (data[date]) {
+                                    button.classList.add('completed');
+                                }
+                            }
+                        });
                     }
                 });
             }
 
-            Object.keys(calendars).forEach(key => {
-                renderCalendar(calendars[key]);
-            });
+            function saveName() {
+                const nameInput = document.getElementById('username');
+                localStorage.setItem('username', nameInput.value);
+            }
+
+            function loadName() {
+                const nameInput = document.getElementById('username');
+                const savedName = localStorage.getItem('username');
+                if (savedName) {
+                    nameInput.value = savedName;
+                }
+            }
+
+            document.getElementById('username').addEventListener('input', saveName);
+
+            loadName();
+            Object.values(calendars).forEach(renderCalendar);
         });
     </script>
 </body>
