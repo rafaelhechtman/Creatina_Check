@@ -27,7 +27,14 @@
         }
 
         .calendar-section {
-            margin-bottom: 2em;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .calendar-container {
+            flex: 1;
+            margin: 0.5em;
         }
 
         .calendar-container h2 {
