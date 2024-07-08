@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário da Creatina</title>
+    <title>Calendário da Creatina e Exercícios</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f0f0;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         nav {
@@ -22,6 +23,7 @@
         nav ul {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
 
         nav ul li {
@@ -36,7 +38,7 @@
         }
 
         main {
-            padding: 2em;
+            padding: 1em;
             max-width: 600px;
             margin: auto;
         }
@@ -52,6 +54,7 @@
         .calendar-section h1 {
             display: flex;
             align-items: center;
+            font-size: 1.5em;
         }
 
         .calendar-section h1 img {
@@ -61,12 +64,22 @@
             border-radius: 50%;
         }
 
-        h1 {
+        h1, h2 {
             color: #007bff;
         }
 
-        h2 {
-            color: #333;
+        .calendars {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-container {
+            flex: 1;
+            margin: 0.5em 0;
+        }
+
+        .calendar-container h2 {
+            margin-top: 0;
         }
 
         .calendar {
@@ -74,6 +87,7 @@
             flex-wrap: wrap;
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
 
         .calendar li {
@@ -82,7 +96,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: calc(33.333% - 10px);
+            width: calc(50% - 10px);
             box-sizing: border-box;
             margin: 5px;
         }
@@ -93,6 +107,7 @@
             border: none;
             padding: 0.5em 1em;
             cursor: pointer;
+            font-size: 0.9em;
         }
 
         button.completed {
@@ -111,71 +126,109 @@
     <main>
         <section id="duda" class="calendar-section">
             <h1>Duda <img src="https://via.placeholder.com/50" alt="Creatina"></h1>
-            <h2>Calendário da Creatina</h2>
-            <ul class="calendar" id="duda-calendar"></ul>
+            <div class="calendars">
+                <div class="calendar-container">
+                    <h2>Calendário da Creatina</h2>
+                    <ul class="calendar" id="duda-creatina-calendar"></ul>
+                </div>
+                <div class="calendar-container">
+                    <h2>Calendário de Exercícios</h2>
+                    <ul class="calendar" id="duda-exercicio-calendar"></ul>
+                </div>
+            </div>
         </section>
         <section id="rafa" class="calendar-section">
             <h1>Rafa <img src="https://via.placeholder.com/50" alt="Creatina"></h1>
-            <h2>Calendário da Creatina</h2>
-            <ul class="calendar" id="rafa-calendar"></ul>
+            <div class="calendars">
+                <div class="calendar-container">
+                    <h2>Calendário da Creatina</h2>
+                    <ul class="calendar" id="rafa-creatina-calendar"></ul>
+                </div>
+                <div class="calendar-container">
+                    <h2>Calendário de Exercícios</h2>
+                    <ul class="calendar" id="rafa-exercicio-calendar"></ul>
+                </div>
+            </div>
         </section>
         <section id="ale" class="calendar-section">
             <h1>Alê <img src="https://via.placeholder.com/50" alt="Creatina"></h1>
-            <h2>Calendário da Creatina</h2>
-            <ul class="calendar" id="ale-calendar"></ul>
+            <div class="calendars">
+                <div class="calendar-container">
+                    <h2>Calendário da Creatina</h2>
+                    <ul class="calendar" id="ale-creatina-calendar"></ul>
+                </div>
+                <div class="calendar-container">
+                    <h2>Calendário de Exercícios</h2>
+                    <ul class="calendar" id="ale-exercicio-calendar"></ul>
+                </div>
+            </div>
         </section>
     </main>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const calendars = {
-                'duda': document.getElementById('duda-calendar'),
-                'rafa': document.getElementById('rafa-calendar'),
-                'ale': document.getElementById('ale-calendar')
+                'duda': {
+                    creatina: document.getElementById('duda-creatina-calendar'),
+                    exercicio: document.getElementById('duda-exercicio-calendar')
+                },
+                'rafa': {
+                    creatina: document.getElementById('rafa-creatina-calendar'),
+                    exercicio: document.getElementById('rafa-exercicio-calendar')
+                },
+                'ale': {
+                    creatina: document.getElementById('ale-creatina-calendar'),
+                    exercicio: document.getElementById('ale-exercicio-calendar')
+                }
             };
 
             const months = ["Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             const daysInMonth = [31, 31, 30, 31, 30, 31]; // Correcting the number of days in each month
 
             Object.keys(calendars).forEach(person => {
-                let calendar = calendars[person];
-                for (let month = 0; month < months.length; month++) {
-                    for (let day = (month === 0 ? 8 : 1); day <= daysInMonth[month]; day++) {
-                        let listItem = document.createElement('li');
-                        listItem.textContent = `${day} de ${months[month]}`;
-                        let button = document.createElement('button');
-                        button.textContent = "Marcar";
-                        button.addEventListener('click', () => {
-                            toggleCompletion(button, person, `${day}-${month}`);
-                        });
-                        listItem.appendChild(button);
-                        calendar.appendChild(listItem);
+                ['creatina', 'exercicio'].forEach(type => {
+                    let calendar = calendars[person][type];
+                    for (let month = 0; month < months.length; month++) {
+                        for (let day = (month === 0 ? 8 : 1); day <= daysInMonth[month]; day++) {
+                            let listItem = document.createElement('li');
+                            listItem.textContent = `${day} de ${months[month]}`;
+                            let button = document.createElement('button');
+                            button.textContent = "Marcar";
+                            button.addEventListener('click', () => {
+                                toggleCompletion(button, `${person}-${type}`, `${day}-${month}`);
+                            });
+                            listItem.appendChild(button);
+                            calendar.appendChild(listItem);
+                        }
                     }
-                }
+                });
             });
 
-            function toggleCompletion(button, person, date) {
+            function toggleCompletion(button, key, date) {
                 let completed = button.classList.toggle('completed');
                 button.textContent = completed ? "Desmarcar" : "Marcar";
-                saveCompletion(person, date, completed);
+                saveCompletion(key, date, completed);
             }
 
-            function saveCompletion(person, date, completed) {
-                let data = JSON.parse(localStorage.getItem(person) || '{}');
+            function saveCompletion(key, date, completed) {
+                let data = JSON.parse(localStorage.getItem(key) || '{}');
                 data[date] = completed;
-                localStorage.setItem(person, JSON.stringify(data));
+                localStorage.setItem(key, JSON.stringify(data));
             }
 
             function loadCompletion() {
                 Object.keys(calendars).forEach(person => {
-                    let data = JSON.parse(localStorage.getItem(person) || '{}');
-                    Object.keys(data).forEach(date => {
-                        let [day, month] = date.split('-');
-                        let index = parseInt(day) - (month === '0' ? 8 : 1) + (month === '0' ? 0 : 31 - 8 + 1);
-                        let button = calendars[person].children[index].querySelector('button');
-                        if (data[date]) {
-                            button.classList.add('completed');
-                            button.textContent = "Desmarcar";
-                        }
+                    ['creatina', 'exercicio'].forEach(type => {
+                        let key = `${person}-${type}`;
+                        let data = JSON.parse(localStorage.getItem(key) || '{}');
+                        Object.keys(data).forEach(date => {
+                            let [day, month] = date.split('-');
+                            let index = (month === '0' ? day - 8 : parseInt(day) + 23 + 31 * (month - 1));
+                            let button = calendars[person][type].children[index].querySelector('button');
+                            if (data[date]) {
+                                button.classList.add('completed');
+                                button.textContent = "Desmarcar";
+                            }
+                        });
                     });
                 });
             }
