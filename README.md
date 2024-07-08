@@ -122,18 +122,18 @@
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
                 <div class="calendar-nav">
-                    <button onclick="prevMonth('creatina')">&lt; Mês Anterior</button>
+                    <button onclick="changeMonth('creatina', -1)">&lt; Mês Anterior</button>
                     <span id="creatina-month-year"></span>
-                    <button onclick="nextMonth('creatina')">Próximo Mês &gt;</button>
+                    <button onclick="changeMonth('creatina', 1)">Próximo Mês &gt;</button>
                 </div>
                 <table class="calendar" id="creatina-calendar"></table>
             </div>
             <div class="calendar-container">
                 <h2>Calendário de Exercícios</h2>
                 <div class="calendar-nav">
-                    <button onclick="prevMonth('exercicio')">&lt; Mês Anterior</button>
+                    <button onclick="changeMonth('exercicio', -1)">&lt; Mês Anterior</button>
                     <span id="exercicio-month-year"></span>
-                    <button onclick="nextMonth('exercicio')">Próximo Mês &gt;</button>
+                    <button onclick="changeMonth('exercicio', 1)">Próximo Mês &gt;</button>
                 </div>
                 <table class="calendar" id="exercicio-calendar"></table>
             </div>
@@ -215,20 +215,13 @@
                 return months[monthIndex];
             }
 
-            function prevMonth(calendarKey) {
+            function changeMonth(calendarKey, offset) {
                 const calendar = calendars[calendarKey];
-                calendar.currentMonth--;
+                calendar.currentMonth += offset;
                 if (calendar.currentMonth < 0) {
                     calendar.currentMonth = 11;
                     calendar.currentYear--;
-                }
-                renderCalendar(calendar);
-            }
-
-            function nextMonth(calendarKey) {
-                const calendar = calendars[calendarKey];
-                calendar.currentMonth++;
-                if (calendar.currentMonth > 11) {
+                } else if (calendar.currentMonth > 11) {
                     calendar.currentMonth = 0;
                     calendar.currentYear++;
                 }
@@ -236,8 +229,8 @@
             }
 
             function toggleCompletion(button, key, date) {
-                let completed = button.classList.toggle('completed');
-                saveCompletion(key, date, completed);
+                button.classList.toggle('completed');
+                saveCompletion(key, date, button.classList.contains('completed'));
             }
 
             function saveCompletion(key, date, completed) {
