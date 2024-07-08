@@ -71,7 +71,7 @@
         }
 
         .calendar li {
-            padding: 0.3em;
+            padding: 0.5em;
             border: 1px solid #ccc;
             display: flex;
             justify-content: space-between;
@@ -109,7 +109,6 @@
     </header>
     <main>
         <section class="calendar-section">
-            <h1>Duda <img src="https://via.placeholder.com/40" alt="Creatina"></h1>
             <div class="calendars">
                 <div class="calendar-container">
                     <h2>Calendário da Creatina</h2>
@@ -149,7 +148,7 @@
         </section>
     </main>
     <footer>
-        Desenvolvido por Rafael Edler Hechtman
+        Minhas Tarefas | Desenvolvido por Rafael Edler Hechtman
     </footer>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
