@@ -39,7 +39,7 @@
 
         main {
             padding: 1em;
-            max-width: 600px;
+            max-width: 1000px;
             margin: auto;
         }
 
@@ -70,12 +70,14 @@
 
         .calendars {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: space-between;
         }
 
         .calendar-container {
             flex: 1;
-            margin: 0.5em 0;
+            margin: 0.5em;
+            min-width: 45%;
         }
 
         .calendar-container h2 {
