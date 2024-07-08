@@ -32,77 +32,71 @@
             margin: auto;
         }
 
+        .calendar-section {
+            margin-bottom: 2em;
+        }
+
         .calendar-section h1 {
-            display: flex;
-            align-items: center;
-            font-size: 1.2em;
-            margin-bottom: 1em;
-        }
-
-        .calendar-section h1 img {
-            margin-left: 10px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-
-        h1, h2 {
-            color: #007bff;
-            font-size: 1em;
-        }
-
-        .calendars {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            text-align: center;
+            font-size: 1.5em;
+            font-family: 'Verdana', sans-serif;
+            margin: 0;
         }
 
         .calendar-container {
-            flex: 1;
-            margin: 1em 0.5em;
-            min-width: 45%;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 1em;
         }
 
         .calendar-container h2 {
-            margin-top: 0;
             font-size: 1.2em;
             text-align: center;
             background-color: #007bff;
             color: white;
             padding: 0.5em;
             font-family: 'Verdana', sans-serif;
+            width: 100%;
         }
 
         .calendar {
-            display: flex;
-            flex-wrap: wrap;
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
+            display: table;
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1em;
         }
 
-        .calendar li {
-            padding: 1em;
+        .calendar th, .calendar td {
             border: 1px solid #ccc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: calc(50% - 12px);
-            box-sizing: border-box;
-            margin: 6px;
-            font-size: 0.8em;
+            padding: 0.5em;
+            text-align: center;
         }
 
-        button {
+        .calendar th {
+            background-color: #007bff;
+            color: white;
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .calendar td {
+            position: relative;
+            height: 4em;
+        }
+
+        .calendar button {
             background-color: #28a745;
             color: white;
             border: none;
             padding: 0.3em 0.5em;
             cursor: pointer;
             font-size: 0.7em;
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
         }
 
-        button.completed {
+        .calendar button.completed {
             background-color: #dc3545;
         }
 
@@ -120,15 +114,17 @@
     </header>
     <main>
         <section class="calendar-section">
-            <h1>Minha rotina <img src="https://via.placeholder.com/40" alt="Creatina"></h1>
-            <div class="calendars">
-                <div class="calendar-container">
-                    <h2>Calendário da Creatina</h2>
-                    <ul class="calendar" id="creatina-calendar"></ul>
+            <h1>Minha rotina</h1>
+            <div class="calendar-container">
+                <h2>Calendário da Creatina</h2>
+                <div class="calendar-wrapper">
+                    <table class="calendar" id="creatina-calendar"></table>
                 </div>
-                <div class="calendar-container">
-                    <h2>Calendário de Exercícios</h2>
-                    <ul class="calendar" id="exercicio-calendar"></ul>
+            </div>
+            <div class="calendar-container">
+                <h2>Calendário de Exercícios</h2>
+                <div class="calendar-wrapper">
+                    <table class="calendar" id="exercicio-calendar"></table>
                 </div>
             </div>
         </section>
@@ -145,21 +141,47 @@
 
             const months = ["Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
             const daysInMonth = [31, 31, 30, 31, 30, 31];
+            const startDay = [8, 1, 1, 1, 1, 1];
+
+            function createCalendar(calendar, month, days, startDay) {
+                const headerRow = document.createElement('tr');
+                const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+                daysOfWeek.forEach(day => {
+                    const th = document.createElement('th');
+                    th.textContent = day;
+                    headerRow.appendChild(th);
+                });
+                calendar.appendChild(headerRow);
+
+                let date = 1;
+                for (let i = 0; i < 6; i++) {
+                    const row = document.createElement('tr');
+
+                    for (let j = 0; j < 7; j++) {
+                        const cell = document.createElement('td');
+                        if (i === 0 && j < startDay[month]) {
+                            cell.textContent = "";
+                        } else if (date > days[month]) {
+                            break;
+                        } else {
+                            cell.textContent = date;
+                            const button = document.createElement('button');
+                            button.textContent = "Marcar";
+                            button.addEventListener('click', () => {
+                                toggleCompletion(button, calendar.id, `${date}-${month}`);
+                            });
+                            cell.appendChild(button);
+                            date++;
+                        }
+                        row.appendChild(cell);
+                    }
+                    calendar.appendChild(row);
+                }
+            }
 
             Object.keys(calendars).forEach(type => {
-                let calendar = calendars[type];
                 for (let month = 0; month < months.length; month++) {
-                    for (let day = (month === 0 ? 8 : 1); day <= daysInMonth[month]; day++) {
-                        let listItem = document.createElement('li');
-                        listItem.textContent = `${day} de ${months[month]}`;
-                        let button = document.createElement('button');
-                        button.textContent = "Marcar";
-                        button.addEventListener('click', () => {
-                            toggleCompletion(button, `${type}`, `${day}-${month}`);
-                        });
-                        listItem.appendChild(button);
-                        calendar.appendChild(listItem);
-                    }
+                    createCalendar(calendars[type], month, daysInMonth, startDay);
                 }
             });
 
@@ -177,12 +199,11 @@
 
             function loadCompletion() {
                 Object.keys(calendars).forEach(type => {
-                    let key = `${type}`;
+                    let key = type;
                     let data = JSON.parse(localStorage.getItem(key) || '{}');
                     Object.keys(data).forEach(date => {
                         let [day, month] = date.split('-');
-                        let index = (month === '0' ? day - 8 : parseInt(day) + 23 + 31 * (month - 1));
-                        let button = calendars[type].children[index].querySelector('button');
+                        let button = calendars[type].querySelector(`td:contains('${day}') button`);
                         if (data[date]) {
                             button.classList.add('completed');
                             button.textContent = "Desmarcar";
