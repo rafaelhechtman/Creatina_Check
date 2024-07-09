@@ -152,30 +152,28 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const today = new Date();
-            const currentMonth = today.getMonth();
-            const currentYear = today.getFullYear();
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
 
             const calendars = {
                 creatina: {
                     element: document.getElementById('creatina-calendar'),
                     monthYear: document.getElementById('creatina-month-year'),
-                    currentMonth: currentMonth,
-                    currentYear: currentYear,
-                    key: 'creatina'
+                    key: 'creatina',
+                    data: {}
                 },
                 exercicio: {
                     element: document.getElementById('exercicio-calendar'),
                     monthYear: document.getElementById('exercicio-month-year'),
-                    currentMonth: currentMonth,
-                    currentYear: currentYear,
-                    key: 'exercicio'
+                    key: 'exercicio',
+                    data: {}
                 }
             };
 
             const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
             function renderCalendar(calendar) {
-                const {element, monthYear, currentMonth, currentYear, key} = calendar;
+                const { element, monthYear, key } = calendar;
                 element.innerHTML = '';
                 monthYear.textContent = `${getMonthName(currentMonth)} ${currentYear}`;
 
@@ -201,11 +199,12 @@
                         } else if (date > daysInMonth) {
                             break;
                         } else {
-                            cell.textContent = date;
                             const button = document.createElement('button');
-                            button.addEventListener('click', () => {
-                                toggleCompletion(button, key, `${date}-${currentMonth + 1}-${currentYear}`);
-                            });
+                            button.type = 'button';
+                            button.classList.add('mark-button');
+                            button.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
+                            button.addEventListener('click', () => toggleCompletion(button, key));
+                            cell.textContent = date;
                             cell.appendChild(button);
                             date++;
                         }
@@ -224,42 +223,40 @@
 
             function changeMonth(calendarKey, offset) {
                 const calendar = calendars[calendarKey];
-                calendar.currentMonth += offset;
-                if (calendar.currentMonth < 0) {
-                    calendar.currentMonth = 11;
-                    calendar.currentYear--;
-                } else if (calendar.currentMonth > 11) {
-                    calendar.currentMonth = 0;
-                    calendar.currentYear++;
+                currentMonth += offset;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                } else if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
                 }
                 renderCalendar(calendar);
             }
 
-            function toggleCompletion(button, key, date) {
+            function toggleCompletion(button, key) {
                 button.classList.toggle('completed');
+                const date = button.dataset.date;
                 saveCompletion(key, date, button.classList.contains('completed'));
             }
 
             function saveCompletion(key, date, completed) {
-                let data = JSON.parse(localStorage.getItem(key) || '{}');
-                data[date] = completed;
-                localStorage.setItem(key, JSON.stringify(data));
+                if (!calendars[key].data[date]) {
+                    calendars[key].data[date] = completed;
+                    localStorage.setItem(key, JSON.stringify(calendars[key].data));
+                } else {
+                    delete calendars[key].data[date];
+                    localStorage.removeItem(key);
+                }
             }
 
             function loadCompletion(calendar) {
-                const {element, key, currentMonth, currentYear} = calendar;
-                let data = JSON.parse(localStorage.getItem(key) || '{}');
-                Object.keys(data).forEach(date => {
-                    const [day, month, year] = date.split('-');
-                    if (parseInt(month) === currentMonth + 1 && parseInt(year) === currentYear) {
-                        const buttons = element.querySelectorAll('button');
-                        buttons.forEach(button => {
-                            if (button.parentElement.textContent.trim() === day) {
-                                if (data[date]) {
-                                    button.classList.add('completed');
-                                }
-                            }
-                        });
+                const savedData = JSON.parse(localStorage.getItem(calendar.key)) || {};
+                const buttons = calendar.element.querySelectorAll('.mark-button');
+                buttons.forEach(button => {
+                    const date = button.dataset.date;
+                    if (savedData[date]) {
+                        button.classList.add('completed');
                     }
                 });
             }
@@ -285,7 +282,6 @@
     </script>
 </body>
 </html>
-
 
 
 
