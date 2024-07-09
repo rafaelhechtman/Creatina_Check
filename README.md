@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +7,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0';
+            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -140,6 +141,17 @@
             background-color: #007bff;
             color: white;
         }
+
+        .upload-section {
+            margin-top: 2em;
+            text-align: center;
+        }
+
+        .upload-section img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 1em;
+        }
     </style>
 </head>
 <body>
@@ -179,6 +191,11 @@
                     </table>
                 </div>
             </div>
+        </section>
+        <section class="upload-section">
+            <h2>Importar Foto</h2>
+            <input type="file" id="upload" accept="image/*">
+            <img id="uploaded-image" src="" alt="Uploaded Image">
         </section>
     </main>
 
@@ -340,6 +357,24 @@
 
             renderCalendar(calendars.creatina);
             renderCalendar(calendars.musculacao);
+
+            // Image upload functionality
+            document.getElementById('upload').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('uploaded-image').src = e.target.result;
+                        localStorage.setItem('uploadedImage', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            const savedImage = localStorage.getItem('uploadedImage');
+            if (savedImage) {
+                document.getElementById('uploaded-image').src = savedImage;
+            }
         });
     </script>
 </body>
