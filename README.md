@@ -83,6 +83,22 @@
             cursor: pointer;
         }
 
+        .calendar button {
+            background-color: #28a745;
+            border: none;
+            width: 1em;
+            height: 1em;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
+            border-radius: 50%;
+        }
+
+        .calendar button.completed {
+            background-color: #dc3545;
+        }
+
         .color-picker {
             display: none;
             position: absolute;
@@ -102,6 +118,14 @@
             border-radius: 50%;
             cursor: pointer;
             margin: 0.2em;
+        }
+
+        .color-picker .close-btn {
+            background-color: #ccc;
+            border: none;
+            cursor: pointer;
+            padding: 0.2em 0.5em;
+            margin-left: 0.5em;
         }
 
         .blue { background-color: blue; }
@@ -261,6 +285,11 @@
                     colorButton.addEventListener('click', () => selectColor(color, colorPicker.parentElement));
                     colorPicker.appendChild(colorButton);
                 });
+                const closeButton = document.createElement('button');
+                closeButton.classList.add('close-btn');
+                closeButton.textContent = 'X';
+                closeButton.addEventListener('click', () => colorPicker.style.display = 'none');
+                colorPicker.appendChild(closeButton);
                 return colorPicker;
             }
 
