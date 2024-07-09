@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -118,14 +118,6 @@
             border-radius: 50%;
             cursor: pointer;
             margin: 0.2em;
-        }
-
-        .color-picker .close-btn {
-            background-color: #ccc;
-            border: none;
-            cursor: pointer;
-            padding: 0.2em 0.5em;
-            margin-left: 0.5em;
         }
 
         .blue { background-color: blue; }
@@ -251,7 +243,7 @@
                                 cell.appendChild(button);
                             } else if (key === 'musculacao') {
                                 cell.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
-                                cell.addEventListener('click', () => showColorPicker(cell, key));
+                                cell.addEventListener('click', (event) => showColorPicker(event, cell, key));
                                 cell.textContent = date;
                                 const colorPicker = createColorPicker();
                                 cell.appendChild(colorPicker);
@@ -285,19 +277,17 @@
                     colorButton.addEventListener('click', () => selectColor(color, colorPicker.parentElement));
                     colorPicker.appendChild(colorButton);
                 });
-                const closeButton = document.createElement('button');
-                closeButton.classList.add('close-btn');
-                closeButton.textContent = 'X';
-                closeButton.addEventListener('click', () => closeColorPicker(colorPicker));
-                colorPicker.appendChild(closeButton);
                 return colorPicker;
             }
 
-            function closeColorPicker(colorPicker) {
-                colorPicker.style.display = 'none';
+            function closeColorPicker() {
+                const colorPickers = document.querySelectorAll('.color-picker');
+                colorPickers.forEach(picker => picker.style.display = 'none');
             }
 
-            function showColorPicker(cell, key) {
+            function showColorPicker(event, cell, key) {
+                event.stopPropagation();
+                closeColorPicker();
                 selectedCell = cell;
                 const colorPicker = cell.querySelector('.color-picker');
                 colorPicker.style.display = 'flex';
@@ -352,6 +342,12 @@
                                 "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
                 return months[monthIndex];
             }
+
+            document.addEventListener('click', (event) => {
+                if (!event.target.closest('.color-picker') && !event.target.closest('td')) {
+                    closeColorPicker();
+                }
+            });
 
             document.getElementById('username').addEventListener('input', function() {
                 localStorage.setItem('username', this.value);
