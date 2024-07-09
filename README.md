@@ -26,7 +26,7 @@
             margin: auto;
         }
 
-        .calendar-section, .upload-section {
+        .section {
             display: none;
         }
 
@@ -159,9 +159,9 @@
             font-size: 1em;
         }
 
-        .evolution-button {
+        .nav-button {
             display: block;
-            margin: 2em auto;
+            margin: 1em auto;
             padding: 0.5em 1em;
             background-color: #007bff;
             color: white;
@@ -202,7 +202,13 @@
         <input type="text" class="name-input" id="username" placeholder="Digite seu nome">
     </header>
     <main>
-        <section class="calendar-section" id="calendar-section">
+        <section class="section" id="main-section">
+            <button class="nav-button" onclick="showSection('creatina-section')">Calendário Creatina</button>
+            <button class="nav-button" onclick="showSection('musculacao-section')">Calendário Musculação</button>
+            <button class="nav-button" onclick="showSection('upload-section')">Evolução do meu shape</button>
+        </section>
+
+        <section class="section" id="creatina-section">
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
                 <div class="calendar-nav">
@@ -210,6 +216,10 @@
                 </div>
                 <table class="calendar" id="creatina-calendar"></table>
             </div>
+            <button class="back-button" onclick="showSection('main-section')">Voltar</button>
+        </section>
+
+        <section class="section" id="musculacao-section">
             <div class="calendar-container">
                 <h2>Calendário de Musculação</h2>
                 <div class="calendar-nav">
@@ -234,14 +244,14 @@
                     </table>
                 </div>
             </div>
-            <button class="evolution-button" onclick="showSection('upload-section')">Evolução do meu shape</button>
+            <button class="back-button" onclick="showSection('main-section')">Voltar</button>
         </section>
 
-        <section class="upload-section" id="upload-section">
+        <section class="section upload-section" id="upload-section">
             <h1>Evolução do Meu Shape</h1>
             <button class="add-photo-button" onclick="addPhotoEntry()">Adicionar Foto</button>
             <div id="photo-entries"></div>
-            <button class="back-button" onclick="showSection('calendar-section')">Voltar</button>
+            <button class="back-button" onclick="showSection('main-section')">Voltar</button>
         </section>
     </main>
 
@@ -308,7 +318,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            showSection('calendar-section');
+            showSection('main-section');
 
             const today = new Date();
             let currentMonth = today.getMonth();
