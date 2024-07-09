@@ -101,34 +101,22 @@
             background-color: #dc3545;
         }
 
-        .muscle-table {
-            margin-top: 1em;
-            border-collapse: collapse;
-            width: 100%;
+        footer {
+            text-align: center;
+            margin-top: 2em;
+            font-size: 0.7em;
+            color: #aaa;
         }
 
-        .muscle-table th, .muscle-table td {
-            border: 1px solid #ccc;
+        .name-input {
+            display: block;
+            margin: 0 auto 1em;
             padding: 0.5em;
+            font-size: 1em;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
-        }
-
-        .muscle-table th {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .return-home {
-            text-align: center;
-            margin-top: 1em;
-        }
-
-        .return-home button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 0.5em 1em;
-            cursor: pointer;
+            font-family: 'Verdana', sans-serif;
         }
     </style>
 </head>
@@ -137,16 +125,7 @@
         <input type="text" class="name-input" id="username" placeholder="Digite seu nome">
     </header>
     <main>
-        <!-- Página Inicial -->
-        <section id="home-page">
-            <div class="return-home">
-                <button onclick="showCreatinaCalendar()">Rotina Creatina</button>
-                <button onclick="showMusculacaoCalendar()">Rotina Musculação</button>
-            </div>
-        </section>
-
-        <!-- Página de Calendário da Creatina -->
-        <section id="creatina-page" class="calendar-section" style="display: none;">
+        <section class="calendar-section">
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
                 <div class="calendar-nav">
@@ -155,42 +134,15 @@
                     <button onclick="changeMonth('creatina', 1)">Próximo Mês &gt;</button>
                 </div>
                 <table class="calendar" id="creatina-calendar"></table>
-                <div class="return-home">
-                    <button onclick="showHomePage()">Voltar para a página inicial</button>
-                </div>
             </div>
-        </section>
-
-        <!-- Página de Calendário de Musculação -->
-        <section id="musculacao-page" class="calendar-section" style="display: none;">
             <div class="calendar-container">
-                <h2>Calendário de Musculação</h2>
+                <h2>Calendário de Exercícios</h2>
                 <div class="calendar-nav">
-                    <button onclick="changeMonth('musculacao', -1)">&lt; Mês Anterior</button>
-                    <span id="musculacao-month-year"></span>
-                    <button onclick="changeMonth('musculacao', 1)">Próximo Mês &gt;</button>
+                    <button onclick="changeMonth('exercicio', -1)">&lt; Mês Anterior</button>
+                    <span id="exercicio-month-year"></span>
+                    <button onclick="changeMonth('exercicio', 1)">Próximo Mês &gt;</button>
                 </div>
-                <table class="calendar" id="musculacao-calendar"></table>
-                <div class="muscle-table">
-                    <h3>Tabela de Grupos Musculares</h3>
-                    <table>
-                        <tr>
-                            <th>Peito, Ombro e Tríceps</th>
-                            <td style="background-color: blue;"></td>
-                        </tr>
-                        <tr>
-                            <th>Costas e Bíceps</th>
-                            <td style="background-color: yellow;"></td>
-                        </tr>
-                        <tr>
-                            <th>Perna</th>
-                            <td style="background-color: green;"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="return-home">
-                    <button onclick="showHomePage()">Voltar para a página inicial</button>
-                </div>
+                <table class="calendar" id="exercicio-calendar"></table>
             </div>
         </section>
     </main>
@@ -210,10 +162,10 @@
                     key: 'creatina',
                     data: {}
                 },
-                musculacao: {
-                    element: document.getElementById('musculacao-calendar'),
-                    monthYear: document.getElementById('musculacao-month-year'),
-                    key: 'musculacao',
+                exercicio: {
+                    element: document.getElementById('exercicio-calendar'),
+                    monthYear: document.getElementById('exercicio-month-year'),
+                    key: 'exercicio',
                     data: {}
                 }
             };
@@ -261,87 +213,66 @@
                     element.appendChild(row);
                 }
 
-                loadSavedData(calendar);
+                loadCompletion(calendar);
+            }
+
+            function getMonthName(monthIndex) {
+                const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                return months[monthIndex];
+            }
+
+            function changeMonth(calendarKey, offset) {
+                currentMonth += offset;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                } else if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar(calendars[calendarKey]);
             }
 
             function toggleCompletion(button, key) {
                 button.classList.toggle('completed');
                 const date = button.dataset.date;
-                if (!calendars[key].data[date]) {
-                    calendars[key].data[date] = {};
-                }
-                calendars[key].data[date].completed = button.classList.contains('completed');
-                saveData();
+                saveCompletion(key, date, button.classList.contains('completed'));
             }
 
-            function loadSavedData(calendar) {
+            function saveCompletion(key, date, completed) {
+                let data = JSON.parse(localStorage.getItem(key)) || {};
+                data[date] = completed;
+                localStorage.setItem(key, JSON.stringify(data));
+            }
+
+            function loadCompletion(calendar) {
                 const savedData = JSON.parse(localStorage.getItem(calendar.key)) || {};
-                calendars[calendar.key].data = savedData;
-                const buttons = document.querySelectorAll(`#${calendar.key}-calendar .mark-button`);
+                const buttons = calendar.element.querySelectorAll('.mark-button');
                 buttons.forEach(button => {
                     const date = button.dataset.date;
-                    if (savedData[date] && savedData[date].completed) {
+                    if (savedData[date]) {
                         button.classList.add('completed');
-                    } else {
-                        button.classList.remove('completed');
                     }
                 });
             }
 
-            function saveData() {
-                Object.keys(calendars).forEach(key => {
-                    localStorage.setItem(key, JSON.stringify(calendars[key].data));
-                });
+            function saveName() {
+                const nameInput = document.getElementById('username');
+                localStorage.setItem('username', nameInput.value);
             }
 
-            function changeMonth(calendarKey, direction) {
-                currentMonth += direction;
-                if (currentMonth === 12) {
-                    currentMonth = 0;
-                    currentYear++;
-                } else if (currentMonth === -1) {
-                    currentMonth = 11;
-                    currentYear--;
+            function loadName() {
+                const nameInput = document.getElementById('username');
+                const savedName = localStorage.getItem('username');
+                if (savedName) {
+                    nameInput.value = savedName;
                 }
-                renderCalendar(calendars[calendarKey]);
             }
 
-            function getMonthName(monthIndex) {
-                const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-                                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-                return months[monthIndex];
-            }
+            document.getElementById('username').addEventListener('input', saveName);
 
-            function showHomePage() {
-                document.getElementById('home-page').style.display = 'block';
-                document.getElementById('creatina-page').style.display = 'none';
-                document.getElementById('musculacao-page').style.display = 'none';
-            }
-
-            function showCreatinaCalendar() {
-                document.getElementById('home-page').style.display = 'none';
-                document.getElementById('creatina-page').style.display = 'block';
-                document.getElementById('musculacao-page').style.display = 'none';
-                renderCalendar(calendars.creatina);
-            }
-
-            function showMusculacaoCalendar() {
-                document.getElementById('home-page').style.display = 'none';
-                document.getElementById('creatina-page').style.display = 'none';
-                document.getElementById('musculacao-page').style.display = 'block';
-                renderCalendar(calendars.musculacao);
-            }
-
-            document.getElementById('username').addEventListener('input', function() {
-                localStorage.setItem('username', this.value);
-            });
-
-            const savedUsername = localStorage.getItem('username');
-            if (savedUsername) {
-                document.getElementById('username').value = savedUsername;
-            }
-
-            showHomePage(); // Mostra a página inicial por padrão
+            loadName();
+            Object.values(calendars).forEach(renderCalendar);
         });
     </script>
 </body>
