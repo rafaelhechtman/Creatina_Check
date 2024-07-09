@@ -180,6 +180,21 @@
             cursor: pointer;
             font-size: 1em;
         }
+
+        .add-photo-button {
+            display: block;
+            margin: 1em auto;
+            padding: 0.5em 1em;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .photo-entry {
+            margin-top: 1em;
+        }
     </style>
 </head>
 <body>
@@ -224,11 +239,8 @@
 
         <section class="upload-section" id="upload-section">
             <h1>Evolução do Meu Shape</h1>
-            <div>
-                <input type="file" id="upload" accept="image/*">
-                <input type="date" id="photo-date" class="date-input">
-                <img id="uploaded-image" src="" alt="Uploaded Image">
-            </div>
+            <button class="add-photo-button" onclick="addPhotoEntry()">Adicionar Foto</button>
+            <div id="photo-entries"></div>
             <button class="back-button" onclick="showSection('calendar-section')">Voltar</button>
         </section>
     </main>
@@ -239,6 +251,60 @@
                 section.style.display = 'none';
             });
             document.getElementById(sectionId).style.display = 'block';
+        }
+
+        function addPhotoEntry() {
+            const entryId = `photo-entry-${Date.now()}`;
+            const entry = document.createElement('div');
+            entry.classList.add('photo-entry');
+            entry.id = entryId;
+            entry.innerHTML = `
+                <input type="file" accept="image/*" onchange="handlePhotoUpload(event, '${entryId}')">
+                <input type="date" class="date-input" onchange="savePhotoDate(event, '${entryId}')">
+                <img id="image-${entryId}" src="" alt="Uploaded Image">
+            `;
+            document.getElementById('photo-entries').appendChild(entry);
+        }
+
+        function handlePhotoUpload(event, entryId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(`image-${entryId}`).src = e.target.result;
+                    const date = document.getElementById(entryId).querySelector('input[type="date"]').value;
+                    savePhotoData(entryId, e.target.result, date);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function savePhotoDate(event, entryId) {
+            const date = event.target.value;
+            const imgSrc = document.getElementById(`image-${entryId}`).src;
+            savePhotoData(entryId, imgSrc, date);
+        }
+
+        function savePhotoData(entryId, imgSrc, date) {
+            const data = JSON.parse(localStorage.getItem('photoEntries')) || {};
+            data[entryId] = { imgSrc, date };
+            localStorage.setItem('photoEntries', JSON.stringify(data));
+        }
+
+        function loadPhotoEntries() {
+            const data = JSON.parse(localStorage.getItem('photoEntries')) || {};
+            Object.keys(data).forEach(entryId => {
+                const { imgSrc, date } = data[entryId];
+                const entry = document.createElement('div');
+                entry.classList.add('photo-entry');
+                entry.id = entryId;
+                entry.innerHTML = `
+                    <input type="file" accept="image/*" onchange="handlePhotoUpload(event, '${entryId}')">
+                    <input type="date" class="date-input" value="${date}" onchange="savePhotoDate(event, '${entryId}')">
+                    <img id="image-${entryId}" src="${imgSrc}" alt="Uploaded Image">
+                `;
+                document.getElementById('photo-entries').appendChild(entry);
+            });
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -401,34 +467,7 @@
             renderCalendar(calendars.creatina);
             renderCalendar(calendars.musculacao);
 
-            // Image upload functionality
-            document.getElementById('upload').addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('uploaded-image').src = e.target.result;
-                        const date = document.getElementById('photo-date').value;
-                        localStorage.setItem('uploadedImage', e.target.result);
-                        localStorage.setItem('photoDate', date);
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            document.getElementById('photo-date').addEventListener('change', function(event) {
-                const date = event.target.value;
-                localStorage.setItem('photoDate', date);
-            });
-
-            const savedImage = localStorage.getItem('uploadedImage');
-            const savedDate = localStorage.getItem('photoDate');
-            if (savedImage) {
-                document.getElementById('uploaded-image').src = savedImage;
-            }
-            if (savedDate) {
-                document.getElementById('photo-date').value = savedDate;
-            }
+            loadPhotoEntries();
         });
     </script>
 </body>
