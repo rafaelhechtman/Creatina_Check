@@ -288,9 +288,13 @@
                 const closeButton = document.createElement('button');
                 closeButton.classList.add('close-btn');
                 closeButton.textContent = 'X';
-                closeButton.addEventListener('click', () => colorPicker.style.display = 'none');
+                closeButton.addEventListener('click', () => closeColorPicker(colorPicker));
                 colorPicker.appendChild(closeButton);
                 return colorPicker;
+            }
+
+            function closeColorPicker(colorPicker) {
+                colorPicker.style.display = 'none';
             }
 
             function showColorPicker(cell, key) {
