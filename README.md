@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +6,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f0f0f0';
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -195,20 +194,20 @@
                     element: document.getElementById('creatina-calendar'),
                     monthYear: document.getElementById('creatina-month-year'),
                     key: 'creatina',
-                    data: {}
+                    data: JSON.parse(localStorage.getItem('creatina')) || {}
                 },
                 musculacao: {
                     element: document.getElementById('musculacao-calendar'),
                     monthYear: document.getElementById('musculacao-month-year'),
                     key: 'musculacao',
-                    data: {}
+                    data: JSON.parse(localStorage.getItem('musculacao')) || {}
                 }
             };
 
             const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
             function renderCalendar(calendar) {
-                const { element, monthYear, key } = calendar;
+                const { element, monthYear, key, data } = calendar;
                 element.innerHTML = '';
                 monthYear.textContent = `${getMonthName(currentMonth)} ${currentYear}`;
 
@@ -241,11 +240,17 @@
                                 button.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
                                 button.addEventListener('click', () => toggleCompletion(button, key));
                                 cell.textContent = date;
+                                if (data[button.dataset.date] && data[button.dataset.date].completed) {
+                                    button.classList.add('completed');
+                                }
                                 cell.appendChild(button);
                             } else if (key === 'musculacao') {
                                 cell.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
                                 cell.addEventListener('click', (event) => showColorPicker(event, cell, key));
                                 cell.textContent = date;
+                                if (data[cell.dataset.date] && data[cell.dataset.date].color) {
+                                    cell.style.backgroundColor = data[cell.dataset.date].color;
+                                }
                                 const colorPicker = createColorPicker();
                                 cell.appendChild(colorPicker);
                             }
@@ -255,8 +260,6 @@
                     }
                     element.appendChild(row);
                 }
-
-                loadSavedData(calendar);
             }
 
             function toggleCompletion(button, key) {
@@ -266,7 +269,7 @@
                     calendars[key].data[date] = {};
                 }
                 calendars[key].data[date].completed = button.classList.contains('completed');
-                saveData();
+                saveData(key);
             }
 
             function createColorPicker() {
@@ -307,35 +310,11 @@
                     calendars[key].data[date] = {};
                 }
                 calendars[key].data[date].color = color;
-                saveData();
+                saveData(key);
             }
 
-            function loadSavedData(calendar) {
-                const { key } = calendar;
-                const savedData = JSON.parse(localStorage.getItem(key)) || {};
-                calendars[key].data = savedData;
-
-                const buttons = document.querySelectorAll(`#${calendar.key}-calendar .mark-button`);
-                buttons.forEach(button => {
-                    const date = button.dataset.date;
-                    if (calendars[key].data[date] && calendars[key].data[date].completed) {
-                        button.classList.add('completed');
-                    }
-                });
-
-                const cells = document.querySelectorAll(`#${calendar.key}-calendar td`);
-                cells.forEach(cell => {
-                    const date = cell.dataset.date;
-                    if (calendars[key].data[date] && calendars[key].data[date].color) {
-                        cell.style.backgroundColor = calendars[key].data[date].color;
-                    }
-                });
-            }
-
-            function saveData() {
-                Object.keys(calendars).forEach(key => {
-                    localStorage.setItem(key, JSON.stringify(calendars[key].data));
-                });
+            function saveData(key) {
+                localStorage.setItem(key, JSON.stringify(calendars[key].data));
             }
 
             function getMonthName(monthIndex) {
