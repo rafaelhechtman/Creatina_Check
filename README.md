@@ -130,6 +130,23 @@
             padding: 0.5em 1em;
             cursor: pointer;
         }
+
+        .color-picker {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1em;
+        }
+
+        .color-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .blue { background-color: blue; }
+        .yellow { background-color: yellow; }
+        .green { background-color: green; }
     </style>
 </head>
 <body>
@@ -173,20 +190,25 @@
                 <table class="calendar" id="musculacao-calendar"></table>
                 <div class="muscle-table">
                     <h3>Tabela de Grupos Musculares</h3>
-                    <table>
+                    <table class="muscle-table">
                         <tr>
                             <th>Peito, Ombro e Tríceps</th>
-                            <td style="background-color: blue;"></td>
+                            <td class="blue"></td>
                         </tr>
                         <tr>
                             <th>Costas e Bíceps</th>
-                            <td style="background-color: yellow;"></td>
+                            <td class="yellow"></td>
                         </tr>
                         <tr>
                             <th>Perna</th>
-                            <td style="background-color: green;"></td>
+                            <td class="green"></td>
                         </tr>
                     </table>
+                </div>
+                <div class="color-picker">
+                    <button class="color-button blue" onclick="chooseColor('blue')">Azul</button>
+                    <button class="color-button yellow" onclick="chooseColor('yellow')">Amarelo</button>
+                    <button class="color-button green" onclick="chooseColor('green')">Verde</button>
                 </div>
                 <div class="return-home">
                     <button onclick="showHomePage()">Voltar para a página inicial</button>
@@ -275,12 +297,14 @@
             }
 
             function loadSavedData(calendar) {
-                const savedData = JSON.parse(localStorage.getItem(calendar.key)) || {};
-                calendars[calendar.key].data = savedData;
+                const { key } = calendar;
+                const savedData = JSON.parse(localStorage.getItem(key)) || {};
+                calendars[key].data = savedData;
+
                 const buttons = document.querySelectorAll(`#${calendar.key}-calendar .mark-button`);
                 buttons.forEach(button => {
                     const date = button.dataset.date;
-                    if (savedData[date] && savedData[date].completed) {
+                    if (calendars[key].data[date] && calendars[key].data[date].completed) {
                         button.classList.add('completed');
                     } else {
                         button.classList.remove('completed');
@@ -329,6 +353,25 @@
                     document.getElementById('creatina-page').style.display = 'none';
                     document.getElementById('musculacao-page').style.display = 'block';
                     renderCalendar(calendars.musculacao);
+                }
+            }
+
+            function chooseColor(color) {
+                const colorButtons = document.querySelectorAll('.color-button');
+                colorButtons.forEach(button => button.classList.remove('selected'));
+                
+                switch (color) {
+                    case 'blue':
+                        document.querySelector('.blue').classList.add('selected');
+                        break;
+                    case 'yellow':
+                        document.querySelector('.yellow').classList.add('selected');
+                        break;
+                    case 'green':
+                        document.querySelector('.green').classList.add('selected');
+                        break;
+                    default:
+                        break;
                 }
             }
 
