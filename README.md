@@ -3,42 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bolão Esportivo - Campeonato Brasileiro</title>
+    <title>Minhas Tarefas</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            box-sizing: border-box;
         }
 
         header {
-            background-color: #333;
+            background-color: #007bff;
             color: white;
-            padding: 1em 0;
+            padding: 1em;
             text-align: center;
-        }
-
-        header h1 {
-            margin: 0;
-        }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        nav ul li {
-            margin: 0 1em;
-        }
-
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
         }
 
         main {
@@ -47,154 +26,336 @@
             margin: auto;
         }
 
-        h2 {
-            color: #333;
+        .calendar-section {
+            margin-top: 1em;
         }
 
-        .game-list {
-            display: flex;
-            flex-direction: column;
+        .calendar-container {
+            margin-bottom: 2em;
         }
 
-        .game {
+        .calendar-container h2 {
+            font-size: 1.2em;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            padding: 0.5em;
+            font-family: 'Verdana', sans-serif;
+            margin-bottom: 0.5em;
+        }
+
+        .calendar-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: white;
-            padding: 1em;
-            margin: 1em 0;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .game .team {
-            flex: 1;
-            text-align: center;
-        }
-
-        .game .details {
-            flex: 2;
-            text-align: center;
-        }
-
-        .bet-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 0.5em 1em;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .bet-btn:hover {
-            background-color: #218838;
-        }
-
-        .bet-form {
-            background-color: white;
-            padding: 1em;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: auto;
-        }
-
-        .bet-form label {
-            display: block;
-            margin: 1em 0 0.5em;
-        }
-
-        .bet-form input, .bet-form select {
-            width: 100%;
-            padding: 0.5em;
             margin-bottom: 1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
         }
 
-        .bet-form button {
-            background-color: #28a745;
+        .calendar-nav button {
+            background-color: #007bff;
             color: white;
             border: none;
             padding: 0.5em 1em;
             cursor: pointer;
-            border-radius: 4px;
+        }
+
+        .calendar {
+            display: table;
+            border-collapse: collapse;
             width: 100%;
         }
 
-        .bet-form button:hover {
-            background-color: #218838;
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
+        .calendar th, .calendar td {
+            border: 1px solid #ccc;
+            padding: 0.5em;
             text-align: center;
-            padding: 1em 0;
-            position: fixed;
+        }
+
+        .calendar th {
+            background-color: #007bff;
+            color: white;
+            font-family: 'Verdana', sans-serif;
+        }
+
+        .calendar td {
+            position: relative;
+            height: 4em;
+        }
+
+        .calendar button {
+            background-color: #28a745;
+            border: none;
+            width: 1em;
+            height: 1em;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
+            border-radius: 50%;
+        }
+
+        .calendar button.completed {
+            background-color: #dc3545;
+        }
+
+        .calendar .arrow {
+            width: 0; 
+            height: 0; 
+            border-left: 0.5em solid transparent;
+            border-right: 0.5em solid transparent;
+            border-top: 0.5em solid #28a745;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
+        }
+
+        .color-picker-container {
+            display: none;
+            margin-top: 1em;
+            justify-content: space-around;
+        }
+
+        .color-picker {
+            display: flex;
+            justify-content: space-around;
+            background-color: #fff;
+            padding: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 0.5em;
+        }
+
+        .color-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .blue { background-color: blue; }
+        .yellow { background-color: yellow; }
+        .green { background-color: green; }
+
+        .muscle-table {
+            margin-top: 1em;
+            border-collapse: collapse;
             width: 100%;
-            bottom: 0;
+        }
+
+        .muscle-table th, .muscle-table td {
+            border: 1px solid #ccc;
+            padding: 0.5em;
+            text-align: center;
+        }
+
+        .muscle-table th {
+            background-color: #007bff;
+            color: white;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Bolão Esportivo - Campeonato Brasileiro</h1>
-        <nav>
-            <ul>
-                <li><a onclick="showPage('jogos')">Jogos</a></li>
-                <li><a onclick="showPage('apostas')">Apostas</a></li>
-            </ul>
-        </nav>
+        <input type="text" class="name-input" id="username" placeholder="Digite seu nome">
     </header>
     <main>
-        <div id="jogos" class="page">
-            <h2>Próximos Jogos</h2>
-            <div class="game-list">
-                <!-- Exemplo de jogo -->
-                <div class="game">
-                    <div class="team">
-                        <span>Time A</span>
-                    </div>
-                    <div class="details">
-                        <span>vs</span>
-                        <span>10/07/2024</span>
-                        <span>19:00</span>
-                    </div>
-                    <div class="team">
-                        <span>Time B</span>
-                    </div>
-                    <button class="bet-btn" onclick="showPage('apostas')">Apostar</button>
+        <section class="calendar-section">
+            <div class="calendar-container">
+                <h2>Calendário da Creatina</h2>
+                <div class="calendar-nav">
+                    <span id="creatina-month-year"></span>
                 </div>
-                <!-- Repita a estrutura do jogo para mais jogos -->
+                <table class="calendar" id="creatina-calendar"></table>
             </div>
-        </div>
-        <div id="apostas" class="page" style="display: none;">
-            <h2>Fazer Apostas</h2>
-            <form class="bet-form">
-                <label for="game">Jogo:</label>
-                <select id="game" name="game">
-                    <option value="game1">Time A vs Time B - 10/07/2024</option>
-                    <!-- Adicione mais jogos conforme necessário -->
-                </select>
-
-                <label for="bet">Aposta:</label>
-                <input type="text" id="bet" name="bet" placeholder="Valor da aposta">
-
-                <button type="submit">Enviar Aposta</button>
-            </form>
-        </div>
+            <div class="calendar-container">
+                <h2>Calendário de Musculação</h2>
+                <div class="calendar-nav">
+                    <span id="musculacao-month-year"></span>
+                </div>
+                <table class="calendar" id="musculacao-calendar"></table>
+                <div class="color-picker-container" id="color-picker-container">
+                    <div class="color-picker">
+                        <button class="color-button blue" onclick="selectColor('blue')">Azul</button>
+                        <button class="color-button yellow" onclick="selectColor('yellow')">Amarelo</button>
+                        <button class="color-button green" onclick="selectColor('green')">Verde</button>
+                    </div>
+                </div>
+                <div class="muscle-table">
+                    <h3>Tabela de Grupos Musculares</h3>
+                    <table class="muscle-table">
+                        <tr>
+                            <th>Peito, Ombro e Tríceps</th>
+                            <td class="blue"></td>
+                        </tr>
+                        <tr>
+                            <th>Costas e Bíceps</th>
+                            <td class="yellow"></td>
+                        </tr>
+                        <tr>
+                            <th>Perna</th>
+                            <td class="green"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </section>
     </main>
-    <footer>
-        <p>&copy; 2024 Bolão Esportivo. Todos os direitos reservados.</p>
-    </footer>
     <script>
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.style.display = 'none';
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date();
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
+            let selectedArrow = null;
+
+            const calendars = {
+                creatina: {
+                    element: document.getElementById('creatina-calendar'),
+                    monthYear: document.getElementById('creatina-month-year'),
+                    key: 'creatina',
+                    data: {}
+                },
+                musculacao: {
+                    element: document.getElementById('musculacao-calendar'),
+                    monthYear: document.getElementById('musculacao-month-year'),
+                    key: 'musculacao',
+                    data: {}
+                }
+            };
+
+            const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+            function renderCalendar(calendar) {
+                const { element, monthYear, key } = calendar;
+                element.innerHTML = '';
+                monthYear.textContent = `${getMonthName(currentMonth)} ${currentYear}`;
+
+                const firstDay = new Date(currentYear, currentMonth).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+                const headerRow = document.createElement('tr');
+                daysOfWeek.forEach(day => {
+                    const th = document.createElement('th');
+                    th.textContent = day;
+                    headerRow.appendChild(th);
+                });
+                element.appendChild(headerRow);
+
+                let date = 1;
+                for (let i = 0; i < 6; i++) {
+                    const row = document.createElement('tr');
+
+                    for (let j = 0; j < 7; j++) {
+                        const cell = document.createElement('td');
+                        if (i === 0 && j < firstDay) {
+                            cell.textContent = "";
+                        } else if (date > daysInMonth) {
+                            break;
+                        } else {
+                            if (key === 'creatina') {
+                                const button = document.createElement('button');
+                                button.type = 'button';
+                                button.classList.add('mark-button');
+                                button.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
+                                button.addEventListener('click', () => toggleCompletion(button, key));
+                                cell.textContent = date;
+                                cell.appendChild(button);
+                            } else if (key === 'musculacao') {
+                                const arrow = document.createElement('div');
+                                arrow.classList.add('arrow');
+                                arrow.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
+                                arrow.addEventListener('click', () => showColorPicker(arrow, key));
+                                cell.textContent = date;
+                                cell.appendChild(arrow);
+                            }
+                            date++;
+                        }
+                        row.appendChild(cell);
+                    }
+                    element.appendChild(row);
+                }
+
+                loadSavedData(calendar);
+            }
+
+            function toggleCompletion(button, key) {
+                button.classList.toggle('completed');
+                const date = button.dataset.date;
+                if (!calendars[key].data[date]) {
+                    calendars[key].data[date] = {};
+                }
+                calendars[key].data[date].completed = button.classList.contains('completed');
+                saveData();
+            }
+
+            function showColorPicker(arrow, key) {
+                selectedArrow = arrow;
+                document.getElementById('color-picker-container').style.display = 'flex';
+            }
+
+            function selectColor(color) {
+                if (selectedArrow) {
+                    selectedArrow.className = `arrow ${color}`;
+                    saveCompletion(selectedArrow, 'musculacao', color);
+                    selectedArrow = null;
+                    document.getElementById('color-picker-container').style.display = 'none';
+                }
+            }
+
+            function saveCompletion(arrow, key, color) {
+                const date = arrow.dataset.date;
+                if (!calendars[key].data[date]) {
+                    calendars[key].data[date] = {};
+                }
+                calendars[key].data[date].color = color;
+                saveData();
+            }
+
+            function loadSavedData(calendar) {
+                const { key } = calendar;
+                const savedData = JSON.parse(localStorage.getItem(key)) || {};
+                calendars[key].data = savedData;
+
+                const buttons = document.querySelectorAll(`#${calendar.key}-calendar .mark-button`);
+                buttons.forEach(button => {
+                    const date = button.dataset.date;
+                    if (calendars[key].data[date] && calendars[key].data[date].completed) {
+                        button.classList.add('completed');
+                    }
+                });
+
+                const arrows = document.querySelectorAll(`#${calendar.key}-calendar .arrow`);
+                arrows.forEach(arrow => {
+                    const date = arrow.dataset.date;
+                    if (calendars[key].data[date] && calendars[key].data[date].color) {
+                        arrow.className = `arrow ${calendars[key].data[date].color}`;
+                    }
+                });
+            }
+
+            function saveData() {
+                Object.keys(calendars).forEach(key => {
+                    localStorage.setItem(key, JSON.stringify(calendars[key].data));
+                });
+            }
+
+            function getMonthName(monthIndex) {
+                const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                return months[monthIndex];
+            }
+
+            document.getElementById('username').addEventListener('input', function() {
+                localStorage.setItem('username', this.value);
             });
-            document.getElementById(pageId).style.display = 'block';
-        }
+
+            const savedUsername = localStorage.getItem('username');
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+            }
+
+            renderCalendar(calendars.creatina);
+            renderCalendar(calendars.musculacao);
+        });
     </script>
 </body>
 </html>
