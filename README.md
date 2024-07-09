@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -123,6 +123,7 @@
         .blue { background-color: blue; }
         .yellow { background-color: yellow; }
         .green { background-color: green; }
+        .white { background-color: white; border: 1px solid #ccc; }
 
         .muscle-table {
             margin-top: 1em;
@@ -271,7 +272,7 @@
             function createColorPicker() {
                 const colorPicker = document.createElement('div');
                 colorPicker.classList.add('color-picker');
-                ['blue', 'yellow', 'green'].forEach(color => {
+                ['blue', 'yellow', 'green', 'white'].forEach(color => {
                     const colorButton = document.createElement('div');
                     colorButton.classList.add('color-button', color);
                     colorButton.addEventListener('click', () => selectColor(color, colorPicker.parentElement));
