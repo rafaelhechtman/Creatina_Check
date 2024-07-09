@@ -27,14 +27,11 @@
         }
 
         .calendar-section {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            margin-top: 1em;
         }
 
         .calendar-container {
-            flex: 1;
-            margin: 0.5em;
+            margin-bottom: 2em;
         }
 
         .calendar-container h2 {
@@ -44,7 +41,7 @@
             color: white;
             padding: 0.5em;
             font-family: 'Verdana', sans-serif;
-            width: 100%;
+            margin-bottom: 0.5em;
         }
 
         .calendar-nav {
@@ -118,19 +115,6 @@
             color: white;
         }
 
-        .return-home {
-            text-align: center;
-            margin-top: 1em;
-        }
-
-        .return-home button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 0.5em 1em;
-            cursor: pointer;
-        }
-
         .color-picker {
             display: flex;
             justify-content: space-around;
@@ -154,16 +138,7 @@
         <input type="text" class="name-input" id="username" placeholder="Digite seu nome">
     </header>
     <main>
-        <!-- Página Inicial -->
-        <section id="home-page">
-            <div class="return-home">
-                <button onclick="showCalendar('creatina')">Rotina Creatina</button>
-                <button onclick="showCalendar('musculacao')">Rotina Musculação</button>
-            </div>
-        </section>
-
-        <!-- Página de Calendário da Creatina -->
-        <section id="creatina-page" class="calendar-section" style="display: none;">
+        <section class="calendar-section">
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
                 <div class="calendar-nav">
@@ -172,14 +147,7 @@
                     <button onclick="changeMonth('creatina', 1)">Próximo Mês &gt;</button>
                 </div>
                 <table class="calendar" id="creatina-calendar"></table>
-                <div class="return-home">
-                    <button onclick="showHomePage()">Voltar para a página inicial</button>
-                </div>
             </div>
-        </section>
-
-        <!-- Página de Calendário de Musculação -->
-        <section id="musculacao-page" class="calendar-section" style="display: none;">
             <div class="calendar-container">
                 <h2>Calendário de Musculação</h2>
                 <div class="calendar-nav">
@@ -210,15 +178,9 @@
                     <button class="color-button yellow" onclick="chooseColor('yellow')">Amarelo</button>
                     <button class="color-button green" onclick="chooseColor('green')">Verde</button>
                 </div>
-                <div class="return-home">
-                    <button onclick="showHomePage()">Voltar para a página inicial</button>
-                </div>
             </div>
         </section>
     </main>
-    <footer>
-        Minhas Tarefas | Desenvolvido por Rafael Edler Hechtman
-    </footer>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const today = new Date();
@@ -336,26 +298,6 @@
                 return months[monthIndex];
             }
 
-            function showHomePage() {
-                document.getElementById('home-page').style.display = 'block';
-                document.getElementById('creatina-page').style.display = 'none';
-                document.getElementById('musculacao-page').style.display = 'none';
-            }
-
-            function showCalendar(calendarType) {
-                if (calendarType === 'creatina') {
-                    document.getElementById('home-page').style.display = 'none';
-                    document.getElementById('creatina-page').style.display = 'block';
-                    document.getElementById('musculacao-page').style.display = 'none';
-                    renderCalendar(calendars.creatina);
-                } else if (calendarType === 'musculacao') {
-                    document.getElementById('home-page').style.display = 'none';
-                    document.getElementById('creatina-page').style.display = 'none';
-                    document.getElementById('musculacao-page').style.display = 'block';
-                    renderCalendar(calendars.musculacao);
-                }
-            }
-
             function chooseColor(color) {
                 const colorButtons = document.querySelectorAll('.color-button');
                 colorButtons.forEach(button => button.classList.remove('selected'));
@@ -384,41 +326,9 @@
                 document.getElementById('username').value = savedUsername;
             }
 
-            showHomePage(); // Mostra a página inicial por padrão
+            renderCalendar(calendars.creatina);
+            renderCalendar(calendars.musculacao);
         });
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
