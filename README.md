@@ -87,6 +87,22 @@
             outline: 2px solid #007bff;
         }
 
+        .calendar button {
+            background-color: #28a745;
+            border: none;
+            width: 1em;
+            height: 1em;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
+            border-radius: 50%;
+        }
+
+        .calendar button.completed {
+            background-color: #dc3545;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -346,6 +362,29 @@
             renderCalendar(calendars.creatina);
             renderCalendar(calendars.musculacao);
         });
+
+        function selectColor(color) {
+            if (selectedCell) {
+                selectedCell.style.backgroundColor = color;
+                saveCompletion(selectedCell, 'musculacao', color);
+                selectedCell = null;
+                document.getElementById('colorModal').style.display = 'none';
+            }
+        }
+
+        function saveCompletion(cell, key, color) {
+            const date = cell.dataset.date;
+            const calendars = {
+                musculacao: {
+                    data: JSON.parse(localStorage.getItem('musculacao')) || {}
+                }
+            };
+            if (!calendars[key].data[date]) {
+                calendars[key].data[date] = {};
+            }
+            calendars[key].data[date].color = color;
+            localStorage.setItem(key, JSON.stringify(calendars[key].data));
+        }
     </script>
 </body>
 </html>
