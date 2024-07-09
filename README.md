@@ -94,28 +94,20 @@
             border-radius: 50%;
         }
 
-        .calendar button.blue { background-color: blue; }
-        .calendar button.yellow { background-color: yellow; }
-        .calendar button.green { background-color: green; }
         .calendar button.completed {
             background-color: #dc3545;
         }
 
-        .muscle-table {
-            margin-top: 1em;
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        .muscle-table th, .muscle-table td {
-            border: 1px solid #ccc;
-            padding: 0.5em;
-            text-align: center;
-        }
-
-        .muscle-table th {
-            background-color: #007bff;
-            color: white;
+        .calendar .arrow {
+            width: 0; 
+            height: 0; 
+            border-left: 0.5em solid transparent;
+            border-right: 0.5em solid transparent;
+            border-top: 0.5em solid #28a745;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0.5em;
+            right: 0.5em;
         }
 
         .color-picker {
@@ -135,6 +127,23 @@
         .yellow { background-color: yellow; }
         .green { background-color: green; }
         .hidden { display: none; }
+
+        .muscle-table {
+            margin-top: 1em;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .muscle-table th, .muscle-table td {
+            border: 1px solid #ccc;
+            padding: 0.5em;
+            text-align: center;
+        }
+
+        .muscle-table th {
+            background-color: #007bff;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -181,7 +190,6 @@
             const today = new Date();
             let currentMonth = today.getMonth();
             let currentYear = today.getFullYear();
-            let selectedColor = '';
 
             const calendars = {
                 creatina: {
@@ -227,13 +235,22 @@
                         } else if (date > daysInMonth) {
                             break;
                         } else {
-                            const button = document.createElement('button');
-                            button.type = 'button';
-                            button.classList.add('mark-button');
-                            button.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
-                            button.addEventListener('click', () => chooseColor(button, key));
-                            cell.textContent = date;
-                            cell.appendChild(button);
+                            if (key === 'creatina') {
+                                const button = document.createElement('button');
+                                button.type = 'button';
+                                button.classList.add('mark-button');
+                                button.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
+                                button.addEventListener('click', () => toggleCompletion(button, key));
+                                cell.textContent = date;
+                                cell.appendChild(button);
+                            } else if (key === 'musculacao') {
+                                const arrow = document.createElement('div');
+                                arrow.classList.add('arrow');
+                                arrow.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
+                                arrow.addEventListener('click', () => showColorPicker(cell, arrow, key));
+                                cell.textContent = date;
+                                cell.appendChild(arrow);
+                            }
                             date++;
                         }
                         row.appendChild(cell);
@@ -244,26 +261,42 @@
                 loadSavedData(calendar);
             }
 
-            function chooseColor(button, key) {
-                const colorPicker = document.createElement('div');
+            function toggleCompletion(button, key) {
+                button.classList.toggle('completed');
+                const date = button.dataset.date;
+                if (!calendars[key].data[date]) {
+                    calendars[key].data[date] = {};
+                }
+                calendars[key].data[date].completed = button.classList.contains('completed');
+                saveData();
+            }
+
+            function showColorPicker(cell, arrow, key) {
+                let colorPicker = cell.querySelector('.color-picker');
+                if (colorPicker) {
+                    colorPicker.remove();
+                    return;
+                }
+
+                colorPicker = document.createElement('div');
                 colorPicker.classList.add('color-picker');
 
                 ['blue', 'yellow', 'green'].forEach(color => {
                     const colorButton = document.createElement('button');
                     colorButton.classList.add('color-button', color);
                     colorButton.addEventListener('click', () => {
-                        button.className = `mark-button ${color}`;
-                        saveCompletion(button, key, color);
-                        document.body.removeChild(colorPicker);
+                        arrow.className = `arrow ${color}`;
+                        saveCompletion(arrow, key, color);
+                        colorPicker.remove();
                     });
                     colorPicker.appendChild(colorButton);
                 });
 
-                document.body.appendChild(colorPicker);
+                cell.appendChild(colorPicker);
             }
 
-            function saveCompletion(button, key, color) {
-                const date = button.dataset.date;
+            function saveCompletion(arrow, key, color) {
+                const date = arrow.dataset.date;
                 if (!calendars[key].data[date]) {
                     calendars[key].data[date] = {};
                 }
@@ -279,8 +312,16 @@
                 const buttons = document.querySelectorAll(`#${calendar.key}-calendar .mark-button`);
                 buttons.forEach(button => {
                     const date = button.dataset.date;
-                    if (calendars[key].data[date]) {
-                        button.className = `mark-button ${calendars[key].data[date].color}`;
+                    if (calendars[key].data[date] && calendars[key].data[date].completed) {
+                        button.classList.add('completed');
+                    }
+                });
+
+                const arrows = document.querySelectorAll(`#${calendar.key}-calendar .arrow`);
+                arrows.forEach(arrow => {
+                    const date = arrow.dataset.date;
+                    if (calendars[key].data[date] && calendars[key].data[date].color) {
+                        arrow.className = `arrow ${calendars[key].data[date].color}`;
                     }
                 });
             }
