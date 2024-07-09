@@ -80,55 +80,43 @@
         .calendar td {
             position: relative;
             height: 4em;
-        }
-
-        .calendar button {
-            background-color: #28a745;
-            border: none;
-            width: 1em;
-            height: 1em;
             cursor: pointer;
-            position: absolute;
-            bottom: 0.5em;
-            right: 0.5em;
-            border-radius: 50%;
         }
 
-        .calendar button.completed {
-            background-color: #dc3545;
+        .calendar td.selected {
+            outline: 2px solid #007bff;
         }
 
-        .calendar .arrow {
-            width: 0; 
-            height: 0; 
-            border-left: 0.5em solid transparent;
-            border-right: 0.5em solid transparent;
-            border-top: 0.5em solid #28a745;
-            cursor: pointer;
-            position: absolute;
-            bottom: 0.5em;
-            right: 0.5em;
-        }
-
-        .color-picker-container {
+        .modal {
             display: none;
-            margin-top: 1em;
-            justify-content: space-around;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
         }
 
-        .color-picker {
-            display: flex;
-            justify-content: space-around;
-            background-color: #fff;
-            padding: 0.5em;
-            border: 1px solid #ccc;
-            border-radius: 0.5em;
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            border-radius: 10px;
         }
 
         .color-button {
-            width: 30px;
-            height: 30px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            margin: 10px;
+            display: inline-block;
             cursor: pointer;
         }
 
@@ -173,13 +161,6 @@
                     <span id="musculacao-month-year"></span>
                 </div>
                 <table class="calendar" id="musculacao-calendar"></table>
-                <div class="color-picker-container" id="color-picker-container">
-                    <div class="color-picker">
-                        <button class="color-button blue" onclick="selectColor('blue')">Azul</button>
-                        <button class="color-button yellow" onclick="selectColor('yellow')">Amarelo</button>
-                        <button class="color-button green" onclick="selectColor('green')">Verde</button>
-                    </div>
-                </div>
                 <div class="muscle-table">
                     <h3>Tabela de Grupos Musculares</h3>
                     <table class="muscle-table">
@@ -200,12 +181,24 @@
             </div>
         </section>
     </main>
+
+    <div id="colorModal" class="modal">
+        <div class="modal-content">
+            <h2>Escolha a cor</h2>
+            <div>
+                <span class="color-button blue" onclick="selectColor('blue')"></span>
+                <span class="color-button yellow" onclick="selectColor('yellow')"></span>
+                <span class="color-button green" onclick="selectColor('green')"></span>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const today = new Date();
             let currentMonth = today.getMonth();
             let currentYear = today.getFullYear();
-            let selectedArrow = null;
+            let selectedCell = null;
 
             const calendars = {
                 creatina: {
@@ -260,12 +253,9 @@
                                 cell.textContent = date;
                                 cell.appendChild(button);
                             } else if (key === 'musculacao') {
-                                const arrow = document.createElement('div');
-                                arrow.classList.add('arrow');
-                                arrow.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
-                                arrow.addEventListener('click', () => showColorPicker(arrow, key));
+                                cell.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
+                                cell.addEventListener('click', () => showColorPicker(cell, key));
                                 cell.textContent = date;
-                                cell.appendChild(arrow);
                             }
                             date++;
                         }
@@ -287,22 +277,22 @@
                 saveData();
             }
 
-            function showColorPicker(arrow, key) {
-                selectedArrow = arrow;
-                document.getElementById('color-picker-container').style.display = 'flex';
+            function showColorPicker(cell, key) {
+                selectedCell = cell;
+                document.getElementById('colorModal').style.display = 'block';
             }
 
             function selectColor(color) {
-                if (selectedArrow) {
-                    selectedArrow.className = `arrow ${color}`;
-                    saveCompletion(selectedArrow, 'musculacao', color);
-                    selectedArrow = null;
-                    document.getElementById('color-picker-container').style.display = 'none';
+                if (selectedCell) {
+                    selectedCell.style.backgroundColor = color;
+                    saveCompletion(selectedCell, 'musculacao', color);
+                    selectedCell = null;
+                    document.getElementById('colorModal').style.display = 'none';
                 }
             }
 
-            function saveCompletion(arrow, key, color) {
-                const date = arrow.dataset.date;
+            function saveCompletion(cell, key, color) {
+                const date = cell.dataset.date;
                 if (!calendars[key].data[date]) {
                     calendars[key].data[date] = {};
                 }
@@ -323,11 +313,11 @@
                     }
                 });
 
-                const arrows = document.querySelectorAll(`#${calendar.key}-calendar .arrow`);
-                arrows.forEach(arrow => {
-                    const date = arrow.dataset.date;
+                const cells = document.querySelectorAll(`#${calendar.key}-calendar td`);
+                cells.forEach(cell => {
+                    const date = cell.dataset.date;
                     if (calendars[key].data[date] && calendars[key].data[date].color) {
-                        arrow.className = `arrow ${calendars[key].data[date].color}`;
+                        cell.style.backgroundColor = calendars[key].data[date].color;
                     }
                 });
             }
