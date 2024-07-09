@@ -83,57 +83,25 @@
             cursor: pointer;
         }
 
-        .calendar td.selected {
-            outline: 2px solid #007bff;
-        }
-
-        .calendar button {
-            background-color: #28a745;
-            border: none;
-            width: 1em;
-            height: 1em;
-            cursor: pointer;
-            position: absolute;
-            bottom: 0.5em;
-            right: 0.5em;
-            border-radius: 50%;
-        }
-
-        .calendar button.completed {
-            background-color: #dc3545;
-        }
-
-        .modal {
+        .color-picker {
             display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding-top: 60px;
+            position: absolute;
+            top: 2em;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 0.5em;
+            border-radius: 0.5em;
+            z-index: 10;
         }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-            border-radius: 10px;
-        }
-
-        .color-button {
-            width: 50px;
-            height: 50px;
+        .color-picker .color-button {
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            margin: 10px;
-            display: inline-block;
             cursor: pointer;
+            margin: 0.2em;
         }
 
         .blue { background-color: blue; }
@@ -198,17 +166,6 @@
         </section>
     </main>
 
-    <div id="colorModal" class="modal">
-        <div class="modal-content">
-            <h2>Escolha a cor</h2>
-            <div>
-                <span class="color-button blue" onclick="selectColor('blue')"></span>
-                <span class="color-button yellow" onclick="selectColor('yellow')"></span>
-                <span class="color-button green" onclick="selectColor('green')"></span>
-            </div>
-        </div>
-    </div>
-
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const today = new Date();
@@ -272,6 +229,8 @@
                                 cell.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
                                 cell.addEventListener('click', () => showColorPicker(cell, key));
                                 cell.textContent = date;
+                                const colorPicker = createColorPicker();
+                                cell.appendChild(colorPicker);
                             }
                             date++;
                         }
@@ -293,18 +252,29 @@
                 saveData();
             }
 
-            function showColorPicker(cell, key) {
-                selectedCell = cell;
-                document.getElementById('colorModal').style.display = 'block';
+            function createColorPicker() {
+                const colorPicker = document.createElement('div');
+                colorPicker.classList.add('color-picker');
+                ['blue', 'yellow', 'green'].forEach(color => {
+                    const colorButton = document.createElement('div');
+                    colorButton.classList.add('color-button', color);
+                    colorButton.addEventListener('click', () => selectColor(color, colorPicker.parentElement));
+                    colorPicker.appendChild(colorButton);
+                });
+                return colorPicker;
             }
 
-            function selectColor(color) {
-                if (selectedCell) {
-                    selectedCell.style.backgroundColor = color;
-                    saveCompletion(selectedCell, 'musculacao', color);
-                    selectedCell = null;
-                    document.getElementById('colorModal').style.display = 'none';
-                }
+            function showColorPicker(cell, key) {
+                selectedCell = cell;
+                const colorPicker = cell.querySelector('.color-picker');
+                colorPicker.style.display = 'flex';
+            }
+
+            function selectColor(color, cell) {
+                cell.style.backgroundColor = color;
+                saveCompletion(cell, 'musculacao', color);
+                const colorPicker = cell.querySelector('.color-picker');
+                colorPicker.style.display = 'none';
             }
 
             function saveCompletion(cell, key, color) {
@@ -362,29 +332,6 @@
             renderCalendar(calendars.creatina);
             renderCalendar(calendars.musculacao);
         });
-
-        function selectColor(color) {
-            if (selectedCell) {
-                selectedCell.style.backgroundColor = color;
-                saveCompletion(selectedCell, 'musculacao', color);
-                selectedCell = null;
-                document.getElementById('colorModal').style.display = 'none';
-            }
-        }
-
-        function saveCompletion(cell, key, color) {
-            const date = cell.dataset.date;
-            const calendars = {
-                musculacao: {
-                    data: JSON.parse(localStorage.getItem('musculacao')) || {}
-                }
-            };
-            if (!calendars[key].data[date]) {
-                calendars[key].data[date] = {};
-            }
-            calendars[key].data[date].color = color;
-            localStorage.setItem(key, JSON.stringify(calendars[key].data));
-        }
     </script>
 </body>
 </html>
