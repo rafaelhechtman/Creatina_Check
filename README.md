@@ -282,6 +282,8 @@
                     const date = button.dataset.date;
                     if (savedData[date] && savedData[date].completed) {
                         button.classList.add('completed');
+                    } else {
+                        button.classList.remove('completed');
                     }
                 });
             }
@@ -344,6 +346,7 @@
     </script>
 </body>
 </html>
+
 
 
 
