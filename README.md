@@ -142,18 +142,14 @@
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
                 <div class="calendar-nav">
-                    <button onclick="changeMonth('creatina', -1)">&lt; Mês Anterior</button>
                     <span id="creatina-month-year"></span>
-                    <button onclick="changeMonth('creatina', 1)">Próximo Mês &gt;</button>
                 </div>
                 <table class="calendar" id="creatina-calendar"></table>
             </div>
             <div class="calendar-container">
                 <h2>Calendário de Musculação</h2>
                 <div class="calendar-nav">
-                    <button onclick="changeMonth('musculacao', -1)">&lt; Mês Anterior</button>
                     <span id="musculacao-month-year"></span>
-                    <button onclick="changeMonth('musculacao', 1)">Próximo Mês &gt;</button>
                 </div>
                 <table class="calendar" id="musculacao-calendar"></table>
                 <div class="muscle-table">
@@ -278,18 +274,6 @@
                 Object.keys(calendars).forEach(key => {
                     localStorage.setItem(key, JSON.stringify(calendars[key].data));
                 });
-            }
-
-            function changeMonth(calendarKey, direction) {
-                currentMonth += direction;
-                if (currentMonth === 12) {
-                    currentMonth = 0;
-                    currentYear++;
-                } else if (currentMonth === -1) {
-                    currentMonth = 11;
-                    currentYear--;
-                }
-                renderCalendar(calendars[calendarKey]);
             }
 
             function getMonthName(monthIndex) {
