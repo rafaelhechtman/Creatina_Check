@@ -114,6 +114,9 @@
             display: flex;
             justify-content: space-around;
             margin-top: 1em;
+            position: absolute;
+            bottom: 2em;
+            right: 0.5em;
         }
 
         .color-button {
