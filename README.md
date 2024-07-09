@@ -117,6 +117,10 @@
             position: absolute;
             bottom: 2em;
             right: 0.5em;
+            background-color: #fff;
+            padding: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 0.5em;
         }
 
         .color-button {
