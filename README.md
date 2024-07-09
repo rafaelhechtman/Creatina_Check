@@ -26,8 +26,8 @@
             margin: auto;
         }
 
-        .calendar-section {
-            margin-top: 1em;
+        .calendar-section, .upload-section {
+            display: none;
         }
 
         .calendar-container {
@@ -143,7 +143,6 @@
         }
 
         .upload-section {
-            margin-top: 2em;
             text-align: center;
         }
 
@@ -152,6 +151,35 @@
             height: auto;
             margin-top: 1em;
         }
+
+        .date-input {
+            display: block;
+            margin: 1em auto;
+            padding: 0.5em;
+            font-size: 1em;
+        }
+
+        .evolution-button {
+            display: block;
+            margin: 2em auto;
+            padding: 0.5em 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .back-button {
+            display: block;
+            margin: 1em auto;
+            padding: 0.5em 1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
@@ -159,7 +187,7 @@
         <input type="text" class="name-input" id="username" placeholder="Digite seu nome">
     </header>
     <main>
-        <section class="calendar-section">
+        <section class="calendar-section" id="calendar-section">
             <div class="calendar-container">
                 <h2>Calendário da Creatina</h2>
                 <div class="calendar-nav">
@@ -191,16 +219,31 @@
                     </table>
                 </div>
             </div>
+            <button class="evolution-button" onclick="showSection('upload-section')">Evolução do meu shape</button>
         </section>
-        <section class="upload-section">
-            <h2>Importar Foto</h2>
-            <input type="file" id="upload" accept="image/*">
-            <img id="uploaded-image" src="" alt="Uploaded Image">
+
+        <section class="upload-section" id="upload-section">
+            <h1>Evolução do Meu Shape</h1>
+            <div>
+                <input type="file" id="upload" accept="image/*">
+                <input type="date" id="photo-date" class="date-input">
+                <img id="uploaded-image" src="" alt="Uploaded Image">
+            </div>
+            <button class="back-button" onclick="showSection('calendar-section')">Voltar</button>
         </section>
     </main>
 
     <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('main > section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            showSection('calendar-section');
+
             const today = new Date();
             let currentMonth = today.getMonth();
             let currentYear = today.getFullYear();
@@ -365,15 +408,26 @@
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         document.getElementById('uploaded-image').src = e.target.result;
+                        const date = document.getElementById('photo-date').value;
                         localStorage.setItem('uploadedImage', e.target.result);
+                        localStorage.setItem('photoDate', date);
                     };
                     reader.readAsDataURL(file);
                 }
             });
 
+            document.getElementById('photo-date').addEventListener('change', function(event) {
+                const date = event.target.value;
+                localStorage.setItem('photoDate', date);
+            });
+
             const savedImage = localStorage.getItem('uploadedImage');
+            const savedDate = localStorage.getItem('photoDate');
             if (savedImage) {
                 document.getElementById('uploaded-image').src = savedImage;
+            }
+            if (savedDate) {
+                document.getElementById('photo-date').value = savedDate;
             }
         });
     </script>
