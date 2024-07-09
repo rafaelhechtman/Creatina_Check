@@ -94,6 +94,9 @@
             border-radius: 50%;
         }
 
+        .calendar button.blue { background-color: blue; }
+        .calendar button.yellow { background-color: yellow; }
+        .calendar button.green { background-color: green; }
         .calendar button.completed {
             background-color: #dc3545;
         }
@@ -131,6 +134,7 @@
         .blue { background-color: blue; }
         .yellow { background-color: yellow; }
         .green { background-color: green; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -169,11 +173,6 @@
                         </tr>
                     </table>
                 </div>
-                <div class="color-picker">
-                    <button class="color-button blue" onclick="chooseColor('blue')">Azul</button>
-                    <button class="color-button yellow" onclick="chooseColor('yellow')">Amarelo</button>
-                    <button class="color-button green" onclick="chooseColor('green')">Verde</button>
-                </div>
             </div>
         </section>
     </main>
@@ -182,6 +181,7 @@
             const today = new Date();
             let currentMonth = today.getMonth();
             let currentYear = today.getFullYear();
+            let selectedColor = '';
 
             const calendars = {
                 creatina: {
@@ -231,7 +231,7 @@
                             button.type = 'button';
                             button.classList.add('mark-button');
                             button.dataset.date = `${date}-${currentMonth + 1}-${currentYear}`;
-                            button.addEventListener('click', () => toggleCompletion(button, key));
+                            button.addEventListener('click', () => chooseColor(button, key));
                             cell.textContent = date;
                             cell.appendChild(button);
                             date++;
@@ -244,13 +244,30 @@
                 loadSavedData(calendar);
             }
 
-            function toggleCompletion(button, key) {
-                button.classList.toggle('completed');
+            function chooseColor(button, key) {
+                const colorPicker = document.createElement('div');
+                colorPicker.classList.add('color-picker');
+
+                ['blue', 'yellow', 'green'].forEach(color => {
+                    const colorButton = document.createElement('button');
+                    colorButton.classList.add('color-button', color);
+                    colorButton.addEventListener('click', () => {
+                        button.className = `mark-button ${color}`;
+                        saveCompletion(button, key, color);
+                        document.body.removeChild(colorPicker);
+                    });
+                    colorPicker.appendChild(colorButton);
+                });
+
+                document.body.appendChild(colorPicker);
+            }
+
+            function saveCompletion(button, key, color) {
                 const date = button.dataset.date;
                 if (!calendars[key].data[date]) {
                     calendars[key].data[date] = {};
                 }
-                calendars[key].data[date].completed = button.classList.contains('completed');
+                calendars[key].data[date].color = color;
                 saveData();
             }
 
@@ -262,10 +279,8 @@
                 const buttons = document.querySelectorAll(`#${calendar.key}-calendar .mark-button`);
                 buttons.forEach(button => {
                     const date = button.dataset.date;
-                    if (calendars[key].data[date] && calendars[key].data[date].completed) {
-                        button.classList.add('completed');
-                    } else {
-                        button.classList.remove('completed');
+                    if (calendars[key].data[date]) {
+                        button.className = `mark-button ${calendars[key].data[date].color}`;
                     }
                 });
             }
@@ -280,25 +295,6 @@
                 const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
                                 "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
                 return months[monthIndex];
-            }
-
-            function chooseColor(color) {
-                const colorButtons = document.querySelectorAll('.color-button');
-                colorButtons.forEach(button => button.classList.remove('selected'));
-                
-                switch (color) {
-                    case 'blue':
-                        document.querySelector('.blue').classList.add('selected');
-                        break;
-                    case 'yellow':
-                        document.querySelector('.yellow').classList.add('selected');
-                        break;
-                    case 'green':
-                        document.querySelector('.green').classList.add('selected');
-                        break;
-                    default:
-                        break;
-                }
             }
 
             document.getElementById('username').addEventListener('input', function() {
